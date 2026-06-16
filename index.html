@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Change Password — Daystar University</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue-dark:   #1a5eb8;
+      --blue-mid:    #2878d6;
+      --blue-light:  #5ba3e8;
+      --sky:         #d6eaff;
+      --red:         #c94f5a;
+      --red-dark:    #a83845;
+      --white:       #ffffff;
+      --gray-bg:     #f0f4fa;
+      --gray-border: #cdd6e3;
+      --gray-text:   #5a6a7e;
+      --black:       #1a2332;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .logo-wrap {
+      width: 72px; height: 72px;
+      background: var(--blue-dark);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px;
+      box-shadow: 0 4px 16px rgba(26,94,184,.3);
+    }
+    .logo-wrap svg { width: 42px; height: 42px; fill: white; }
+    .header h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--blue-dark);
+      letter-spacing: -.3px;
+    }
+    .header p {
+      font-size: .85rem;
+      color: var(--gray-text);
+      margin-top: 4px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 2px 24px rgba(26,94,184,.10);
+      padding: 36px 32px 28px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* ── Steps ── */
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 32px;
+    }
+    .step {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      flex: 1;
+    }
+    .step-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700;
+      border: 2px solid var(--gray-border);
+      color: var(--gray-text);
+      background: var(--white);
+      transition: all .25s;
+    }
+    .step-dot.active {
+      background: var(--blue-dark); border-color: var(--blue-dark); color: white;
+    }
+    .step-dot.done {
+      background: #22c55e; border-color: #22c55e; color: white;
+    }
+    .step-label {
+      font-size: .68rem; color: var(--gray-text); font-weight: 500; text-align: center;
+    }
+    .step-line {
+      flex: 1; height: 2px;
+      background: var(--gray-border);
+      margin-bottom: 18px;
+      transition: background .25s;
+    }
+    .step-line.done { background: #22c55e; }
+
+    /* ── Form ── */
+    .form-title {
+      font-size: 1rem; font-weight: 700; color: var(--black); margin-bottom: 20px;
+    }
+
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      font-size: .82rem; font-weight: 600; color: var(--black);
+      margin-bottom: 7px;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap input {
+      width: 100%;
+      padding: 11px 42px 11px 14px;
+      border: 1.5px solid var(--gray-border);
+      border-radius: 9px;
+      font-size: .92rem;
+      color: var(--black);
+      background: var(--gray-bg);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      font-family: inherit;
+    }
+    .input-wrap input:focus {
+      border-color: var(--blue-mid);
+      box-shadow: 0 0 0 3px rgba(40,120,214,.13);
+      background: white;
+    }
+    .input-wrap input.error-field { border-color: var(--red); }
+    .eye-btn {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--gray-text);
+      padding: 0; display: flex; align-items: center;
+    }
+    .eye-btn:hover { color: var(--blue-dark); }
+
+    .hint {
+      font-size: .73rem; color: var(--gray-text); margin-top: 5px;
+    }
+    .error-msg {
+      font-size: .73rem; color: var(--red); margin-top: 5px; display: none;
+    }
+
+    /* ── Strength bar ── */
+    .strength-wrap { margin-top: 8px; display: none; }
+    .strength-track {
+      height: 4px; border-radius: 2px; background: var(--gray-border);
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%; width: 0; border-radius: 2px;
+      transition: width .3s, background .3s;
+    }
+    .strength-label {
+      font-size: .7rem; color: var(--gray-text); margin-top: 4px;
+    }
+
+    /* ── Button ── */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none; border-radius: 9px;
+      font-size: .95rem; font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, transform .1s, box-shadow .2s;
+      font-family: inherit;
+      margin-top: 4px;
+    }
+    .btn-primary {
+      background: var(--red);
+      color: white;
+      box-shadow: 0 3px 12px rgba(201,79,90,.28);
+    }
+    .btn-primary:hover { background: var(--red-dark); box-shadow: 0 4px 16px rgba(168,56,69,.35); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { background: var(--gray-border); color: var(--gray-text); box-shadow: none; cursor: not-allowed; }
+
+    /* ── Success ── */
+    .success-panel {
+      display: none; text-align: center;
+    }
+    .success-icon {
+      width: 64px; height: 64px; background: #dcfce7;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .success-icon svg { width: 32px; height: 32px; color: #16a34a; }
+    .success-panel h2 { font-size: 1.1rem; font-weight: 700; color: var(--black); }
+    .success-panel p { font-size: .85rem; color: var(--gray-text); margin-top: 6px; }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 22px;
+      font-size: .75rem;
+      color: var(--gray-text);
+      text-align: center;
+    }
+    .footer a { color: var(--blue-mid); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Step panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo-wrap">
+      <!-- Graduation cap icon -->
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18V17l7 4 7-4v-3.82l-7 3.82-7-3.82z"/>
+      </svg>
+    </div>
+    <h1>Daystar University</h1>
+    <p>Student Portal — Password Reset</p>
+  </div>
+
+  <div class="card">
+
+    <!-- Steps indicator -->
+    <div class="steps">
+      <div class="step">
+        <div class="step-dot active" id="dot1">1</div>
+        <div class="step-label">Verify ID</div>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step">
+        <div class="step-dot" id="dot2">2</div>
+        <div class="step-label">New Password</div>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step">
+        <div class="step-dot" id="dot3">✓</div>
+        <div class="step-label">Done</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Student ID -->
+    <div class="panel active" id="step1">
+      <div class="form-title">Enter your Student ID</div>
+
+      <div class="field">
+        <label for="studentId">Student ID Number</label>
+        <div class="input-wrap">
+          <input type="text" id="studentId" placeholder="e.g. 21-0001" maxlength="12" autocomplete="off" />
+        </div>
+        <div class="hint">Format: YY-XXXX (e.g. 21-0342)</div>
+        <div class="error-msg" id="idError">Please enter a valid Student ID.</div>
+      </div>
+
+      <div class="field">
+        <label for="currentPwd">Current Password</label>
+        <div class="input-wrap">
+          <input type="password" id="currentPwd" placeholder="Your current password" />
+          <button class="eye-btn" type="button" onclick="toggleVis('currentPwd',this)" aria-label="Show/hide">
+            <svg id="eye-c" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="error-msg" id="pwdError">Please enter your current password.</div>
+      </div>
+
+      <button class="btn btn-primary" id="verifyBtn" onclick="verifyStep()">Verify Identity</button>
+    </div>
+
+    <!-- Step 2: New Password -->
+    <div class="panel" id="step2">
+      <div class="form-title">Set your new password</div>
+
+      <div class="field">
+        <label for="newPwd">New Password</label>
+        <div class="input-wrap">
+          <input type="password" id="newPwd" placeholder="Create a strong password" oninput="checkStrength()" />
+          <button class="eye-btn" type="button" onclick="toggleVis('newPwd',this)" aria-label="Show/hide">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="strength-wrap" id="strengthWrap">
+          <div class="strength-track"><div class="strength-fill" id="strengthFill"></div></div>
+          <div class="strength-label" id="strengthLabel"></div>
+        </div>
+        <div class="error-msg" id="newPwdError">Password must be at least 8 characters.</div>
+      </div>
+
+      <div class="field">
+        <label for="confirmPwd">Confirm New Password</label>
+        <div class="input-wrap">
+          <input type="password" id="confirmPwd" placeholder="Re-enter new password" />
+          <button class="eye-btn" type="button" onclick="toggleVis('confirmPwd',this)" aria-label="Show/hide">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="error-msg" id="confirmError">Passwords do not match.</div>
+      </div>
+
+      <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+    </div>
+
+    <!-- Step 3: Success -->
+    <div class="panel" id="step3">
+      <div class="success-panel" id="successPanel" style="display:block">
+        <div class="success-icon">
+          <svg fill="none" stroke="#16a34a" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h2>Password Changed!</h2>
+        <p>Your Daystar University portal password has been updated successfully.</p>
+        <button class="btn btn-primary" style="margin-top:24px" onclick="window.location.reload()">Back to Login</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    2026 &copy; Daystar University &nbsp;|&nbsp; <a href="#">Help Desk</a> &nbsp;|&nbsp; Designed by DSL Systems
+  </div>
+
+  <script>
+    function toggleVis(id, btn) {
+      const inp = document.getElementById(id);
+      const isText = inp.type === 'text';
+      inp.type = isText ? 'password' : 'text';
+      btn.innerHTML = isText
+        ? `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+        : `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+
+    function showError(id, show) {
+      document.getElementById(id).style.display = show ? 'block' : 'none';
+    }
+
+    function verifyStep() {
+      const id = document.getElementById('studentId').value.trim();
+      const pwd = document.getElementById('currentPwd').value;
+      let valid = true;
+
+      if (!id || !/^\d{2}-\d{3,6}$/.test(id)) {
+        showError('idError', true); valid = false;
+      } else { showError('idError', false); }
+
+      if (!pwd) {
+        showError('pwdError', true); valid = false;
+      } else { showError('pwdError', false); }
+
+      if (!valid) return;
+
+      // Simulate verification
+      document.getElementById('verifyBtn').textContent = 'Verifying…';
+      document.getElementById('verifyBtn').disabled = true;
+
+      setTimeout(() => {
+        document.getElementById('step1').classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+
+        // Update stepper
+        document.getElementById('dot1').className = 'step-dot done';
+        document.getElementById('dot1').textContent = '✓';
+        document.getElementById('line1').classList.add('done');
+        document.getElementById('dot2').className = 'step-dot active';
+
+        document.getElementById('verifyBtn').textContent = 'Verify Identity';
+        document.getElementById('verifyBtn').disabled = false;
+      }, 900);
+    }
+
+    function checkStrength() {
+      const val = document.getElementById('newPwd').value;
+      const wrap = document.getElementById('strengthWrap');
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+
+      if (!val) { wrap.style.display = 'none'; return; }
+      wrap.style.display = 'block';
+
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const levels = [
+        { w: '25%', bg: '#ef4444', text: 'Weak' },
+        { w: '50%', bg: '#f97316', text: 'Fair' },
+        { w: '75%', bg: '#eab308', text: 'Good' },
+        { w: '100%', bg: '#22c55e', text: 'Strong' },
+      ];
+      const l = levels[score - 1] || levels[0];
+      fill.style.width = l.w;
+      fill.style.background = l.bg;
+      label.textContent = l.text;
+      label.style.color = l.bg;
+    }
+
+    function changePassword() {
+      const np = document.getElementById('newPwd').value;
+      const cp = document.getElementById('confirmPwd').value;
+      let valid = true;
+
+      if (np.length < 8) { showError('newPwdError', true); valid = false; }
+      else { showError('newPwdError', false); }
+
+      if (np !== cp) { showError('confirmError', true); valid = false; }
+      else { showError('confirmError', false); }
+
+      if (!valid) return;
+
+      document.querySelector('#step2 .btn-primary').textContent = 'Updating…';
+      document.querySelector('#step2 .btn-primary').disabled = true;
+
+      setTimeout(() => {
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step3').classList.add('active');
+
+        document.getElementById('dot2').className = 'step-dot done';
+        document.getElementById('dot2').textContent = '✓';
+        document.getElementById('line2').classList.add('done');
+        document.getElementById('dot3').className = 'step-dot done';
+      }, 900);
+    }
+  </script>
+</body>
+</html>
